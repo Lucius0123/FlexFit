@@ -1,280 +1,129 @@
-import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
-import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pose_detection_realtime/profile_pages/Edit_profile.dart';
+import 'package:pose_detection_realtime/profile_pages/Setting_Page/setting_page.dart';
+import 'package:pose_detection_realtime/profile_pages/my_profile.dart';
+import 'Search Pages/search_screen.dart';
+import 'Set Profile/age_selection.dart';
+import 'Set Profile/gender_selection.dart';
+import 'Set Profile/goal_select.dart';
+import 'Set Profile/select_height.dart';
+import 'Set Profile/select_weight.dart';
+import 'Set Profile/setUp.dart';
+import 'SignUp Page/forgotPassword.dart';
+import 'SignUp Page/login.dart';
+import 'SignUp Page/setPassword.dart';
+import 'SignUp Page/signUP.dart';
+import 'home_page.dart';
 late List<CameraDescription> cameras;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(
-        title: 'screen',
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690), // Design resolution size
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: _buildThemeData(),
+          initialRoute: '/login',
+          getPages: [
+            GetPage(name: '/login', page: () =>  LoginPage()),
+            GetPage(name: '/home_page', page: () =>  HomePage()),
+            GetPage(name: '/signup', page: () => const SignUpPage()),
+            GetPage(name: '/setting_page', page: () =>  SettingsPage()),
+            GetPage(name: '/Search_screen', page: () =>  SearchScreen()),
+
+          ],
+        );
+      },
     );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  dynamic controller;
-  bool isBusy = false;
-  late Size size;
-
-  //TODO declare detector
-  late PoseDetector poseDetector;
-  @override
-  void initState() {
-    super.initState();
-    initializeCamera();
-  }
-
-  //TODO code to initialize the camera feed
-  initializeCamera() async {
-    //TODO initialize detector
-    final options = PoseDetectorOptions(
-        mode: PoseDetectionMode.stream);
-    poseDetector = PoseDetector(options: options);
-
-    controller = CameraController(cameras[0], ResolutionPreset.medium,imageFormatGroup: Platform.isAndroid
-    ? ImageFormatGroup.nv21
-        : ImageFormatGroup.bgra8888,  );
-    await controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      controller.startImageStream((image) => {
-        if (!isBusy)
-          {isBusy = true, img = image, doPoseEstimationOnFrame()}
-      });
-    });
-  }
-
-  //TODO pose detection on a frame
-  dynamic _scanResults;
-  CameraImage? img;
-  doPoseEstimationOnFrame() async {
-    setState(() {
-      isBusy = false;
-    });
-  }
-
-  //close all resources
-  @override
-  void dispose() {
-    controller?.dispose();
-    poseDetector.close();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> stackChildren = [];
-    size = MediaQuery.of(context).size;
-    if (controller != null) {
-      stackChildren.add(
-        Positioned(
-          top: 0.0,
-          left: 0.0,
-          width: size.width,
-          height: size.height,
-          child: Container(
-            child: (controller.value.isInitialized)
-                ? AspectRatio(
-              aspectRatio: controller.value.aspectRatio,
-              child: CameraPreview(controller),
-            )
-                : Container(),
-          ),
+  ThemeData _buildThemeData() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: const Color(0xff6E8EEF),
+      scaffoldBackgroundColor: const Color(0xff232323),
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.poppins(
+          fontSize: 32.sp, // Use .sp for responsive font sizes
+          fontWeight: FontWeight.w500,
+          color: const Color(0xffBADE4F),
         ),
-      );
-
-      // stackChildren.add(
-      //   Positioned(
-      //       top: 0.0,
-      //       left: 0.0,
-      //       width: size.width,
-      //       height: size.height,
-      //       child: buildResult()),
-      // );
-    }
-
-    return Scaffold(
-
-      body: Container(
-          margin: const EdgeInsets.only(top: 0),
+        displayMedium: GoogleFonts.poppins(
+          fontSize: 24.sp,
+          fontWeight: FontWeight.bold,
+          color: const Color(0xffBADE4F),
+        ),
+        displaySmall:GoogleFonts.poppins(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.w700,
+          color:  Colors.white,
+        ),
+        bodyLarge: GoogleFonts.poppins(
+          fontSize: 18.sp,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+        bodyMedium: GoogleFonts.poppins(
+          fontSize: 14.sp,
+          color: Colors.white,
+        ),
+        labelLarge: GoogleFonts.poppins(
+          fontSize: 16.sp,
           color: Colors.black,
-          child: Stack(
-            children: stackChildren,
-          )),
-    );
-  }
+        ),
 
-  final _orientations = {
-    DeviceOrientation.portraitUp: 0,
-    DeviceOrientation.landscapeLeft: 90,
-    DeviceOrientation.portraitDown: 180,
-    DeviceOrientation.landscapeRight: 270,
-  };
-  InputImage? _inputImageFromCameraImage() {
-    // get image rotation
-    // it is used in android to convert the InputImage from Dart to Java
-    // `rotation` is not used in iOS to convert the InputImage from Dart to Obj-C
-    // in both platforms `rotation` and `camera.lensDirection` can be used to compensate `x` and `y` coordinates on a canvas
-    final camera = cameras[0];
-    final sensorOrientation = camera.sensorOrientation;
-    InputImageRotation? rotation;
-    if (Platform.isIOS) {
-      rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
-    } else if (Platform.isAndroid) {
-      var rotationCompensation =
-      _orientations[controller!.value.deviceOrientation];
-      if (rotationCompensation == null) return null;
-      if (camera.lensDirection == CameraLensDirection.front) {
-        // front-facing
-        rotationCompensation = (sensorOrientation + rotationCompensation) % 360;
-      } else {
-        // back-facing
-        rotationCompensation =
-            (sensorOrientation - rotationCompensation + 360) % 360;
-      }
-      rotation = InputImageRotationValue.fromRawValue(rotationCompensation);
-    }
-    if (rotation == null) return null;
-
-    // get image format
-    final format = InputImageFormatValue.fromRawValue(img!.format.raw);
-    // validate format depending on platform
-    // only supported formats:
-    // * nv21 for Android
-    // * bgra8888 for iOS
-    if (format == null ||
-        (Platform.isAndroid && format != InputImageFormat.nv21) ||
-        (Platform.isIOS && format != InputImageFormat.bgra8888)) return null;
-
-    // since format is constraint to nv21 or bgra8888, both only have one plane
-    if (img!.planes.length != 1) return null;
-    final plane = img!.planes.first;
-
-    // compose InputImage using bytes
-    return InputImage.fromBytes(
-      bytes: plane.bytes,
-      metadata: InputImageMetadata(
-        size: Size(img!.width.toDouble(), img!.height.toDouble()),
-        rotation: rotation, // used only in Android
-        format: format, // used only in iOS
-        bytesPerRow: plane.bytesPerRow, // used only in iOS
+      ),
+      colorScheme: ColorScheme.dark(
+        primary: const Color(0xff6E8EEF),
+        secondary: Colors.grey[800]!,
+        surface: const Color(0xff232323),
+        onPrimary: const Color(0xffBADE4F),
+        onSecondary: Colors.white,
+        onSurface: const Color(0xff295095),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.20),
+          foregroundColor: const Color(0xff295095),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+            side: const BorderSide(
+              color: Colors.white,
+              width: 1,
+            ),
+          ),
+          minimumSize: Size(100.w, 50.h), // Use .w and .h for responsive sizes
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: const TextStyle(color: Colors.black),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Colors.white),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Color(0xff295095)),
+        ),
       ),
     );
   }
-
-  //Show rectangles around detected objects
-  Widget buildResult() {
-    if (_scanResults == null ||
-        controller == null ||
-        !controller.value.isInitialized) {
-      return Text('');
-    }
-    final Size imageSize = Size(
-      controller.value.previewSize!.height,
-      controller.value.previewSize!.width,
-    );
-    CustomPainter painter = PosePainter(imageSize, _scanResults);
-    return CustomPaint(
-      painter: painter,
-    );
-  }
 }
 
-class PosePainter extends CustomPainter {
-  PosePainter(this.absoluteImageSize, this.poses);
 
-  final Size absoluteImageSize;
-  final List<Pose> poses;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..color = Colors.green;
-
-    final leftPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.yellow;
-
-    final rightPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = Colors.blueAccent;
-
-    for (final pose in poses) {
-      pose.landmarks.forEach((_, landmark) {
-        canvas.drawCircle(
-            Offset(landmark.x * scaleX, landmark.y * scaleY), 1, paint);
-      });
-
-      void paintLine(
-          PoseLandmarkType type1, PoseLandmarkType type2, Paint paintType) {
-        final PoseLandmark joint1 = pose.landmarks[type1]!;
-        final PoseLandmark joint2 = pose.landmarks[type2]!;
-        canvas.drawLine(Offset(joint1.x * scaleX, joint1.y * scaleY),
-            Offset(joint2.x * scaleX, joint2.y * scaleY), paintType);
-      }
-
-      // //Draw arms
-      // paintLine(
-      //     PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow, leftPaint);
-      // paintLine(
-      //     PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist, leftPaint);
-      // paintLine(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow,
-      //     rightPaint);
-      // paintLine(
-      //     PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist, rightPaint);
-      //
-      // //Draw Body
-      // paintLine(
-      //     PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip, leftPaint);
-      // paintLine(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightHip,
-      //     rightPaint);
-      //
-      // //Draw legs
-      // paintLine(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee, leftPaint);
-      // paintLine(
-      //     PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle, leftPaint);
-      // paintLine(
-      //     PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee, rightPaint);
-      // paintLine(
-      //     PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle, rightPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(PosePainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.poses != poses;
-  }
-}
