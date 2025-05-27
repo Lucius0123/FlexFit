@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pose_detection_realtime/SignUp%20Page/signUP.dart';
 
+import '../A part/controllers/auth_controller.dart';
+import '../A part/screens/forgot_password_screen.dart';
 import '../components/textfield.dart';
+import 'forgotPassword.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
-TextEditingController name = TextEditingController();
-  TextEditingController pass = TextEditingController();
   @override
+  final authController = Get.find<AuthController>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
-          onPressed: () {},
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
           "Log In",
           style: Theme.of(context).textTheme.displayMedium,
@@ -28,14 +30,14 @@ TextEditingController name = TextEditingController();
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 50,),
+            const SizedBox(height: 20,),
             Text(
               "Welcome",
               style: Theme.of(context).textTheme.displayMedium!.copyWith(
                 color: Colors.white
               ),
             ),
-            SizedBox(height: 26.h), // Use .h for spacing
+            SizedBox(height: 16.h), // Use .h for spacing
             Padding(
               padding: EdgeInsets.all(12.w), // Use .w for padding
               child: Text(
@@ -44,7 +46,7 @@ TextEditingController name = TextEditingController();
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
-            SizedBox(height: 26.h),
+            SizedBox(height: 16.h),
             Container(
               padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 24.w),
               color: Theme.of(context).colorScheme.primary,
@@ -54,13 +56,15 @@ TextEditingController name = TextEditingController();
                   GeneralTextField(
                     feildColor: Colors.black,
                     filledName: 'Username or email',
-                      controller: name,
+                      controller: emailController,
                     hintText: "Abc sbn",
                     ),
                   SizedBox(height: 10.h),
                   PasswordTextField(
                       text: "Password",
-                      controller: pass, passFilledName: "Password",)
+                      controller: passwordController,
+                    feildColor: Colors.black,
+                    passFilledName: "Password",)
                 ],
               ),
             ),
@@ -69,7 +73,9 @@ TextEditingController name = TextEditingController();
               child: Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => Get.toNamed('/forgot_password'),
+                  onPressed: () {
+                    Get.to(() =>  ForgotPasswordPage());
+                  },
                   child: Text(
                     "Forgot Password?",
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -78,13 +84,32 @@ TextEditingController name = TextEditingController();
               ),
             ),
             SizedBox(height: 10.h),
-            ElevatedButton(
-              onPressed: () => Get.toNamed('/home_page'),
-              child: Text("Log In", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold
-              )),
-            ),
-            SizedBox(height: 26.h),
+            Obx(() => ElevatedButton(
+              onPressed: authController.isLoading.value
+                  ? null
+                  : () {
+                if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                  Get.snackbar('Error', 'Please fill in all fields');
+                  return;
+                }
+                authController.signIn(
+                  emailController.text.trim(),
+                  passwordController.text,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: authController.isLoading.value
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  :  Text(
+                'Log In',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold
+                  )
+              ),
+            )),
+            SizedBox(height: 16.h),
             Center(
               child: Text("or sign up with", style: Theme.of(context).textTheme.bodyMedium),
             ),
@@ -104,7 +129,9 @@ TextEditingController name = TextEditingController();
                 children: [
                   const Text("Don't have an account?"),
                   TextButton(
-                    onPressed: () => Get.toNamed('/signup'),
+                    onPressed: () {
+                      Get.to(() => const SignUpPage());
+                    },
                     child: Text(
                       "Sign Up",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(

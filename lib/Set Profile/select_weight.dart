@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pose_detection_realtime/Set%20Profile/ruler_picker.dart';
 import 'package:pose_detection_realtime/Set%20Profile/select_height.dart';
+import '../A part/controllers/onboarding_controller.dart';
 
 
 class WeightSelectionPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class WeightSelectionPage extends StatefulWidget {
 }
 
 class _WeightSelectionPageState extends State<WeightSelectionPage> {
+  final OnboardingController controller = Get.find<OnboardingController>();
   bool _isKgSelected = true; // Default unit is kilograms
   int _weightKg = 75; // Default weight in kg
   int _weightLb = 165; // Default weight in pounds (approx.)
@@ -25,12 +27,20 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
   int get _currentWeight => _isKgSelected ? _weightKg : _weightLb;
 
   @override
+  void initState() {
+    super.initState();
+    _weightKg = controller.weight.value.toInt();
+    _weightLb = _kgToLb(_weightKg);
+    _isKgSelected = controller.isKgSelected.value;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
+          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F), size: 40),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -59,7 +69,7 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
             Center(
               child: Text(
                 'Start your journey to a healthier lifestyle by setting up your profile.',
-                style:Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -75,9 +85,11 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
                   if (_isKgSelected) {
                     _weightKg = value; // Update kg weight
                     _weightLb = _kgToLb(value); // Convert to lb
+                    controller.setWeight(_weightKg.toDouble(), true);
                   } else {
                     _weightLb = value; // Update lb weight
                     _weightKg = _lbToKg(value); // Convert to kg
+                    controller.setWeight(_weightKg.toDouble(), true);
                   }
                 });
               },
@@ -94,6 +106,7 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
                   } else {
                     _weightLb = _kgToLb(_weightKg); // Convert to lb
                   }
+                  controller.isKgSelected.value = _isKgSelected;
                 });
               },
               borderRadius: BorderRadius.circular(15),
@@ -104,17 +117,17 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: Text('KG', style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                      color: _isKgSelected ?Colors.black:Colors.white,
+                      color: _isKgSelected ? Colors.black : Colors.white,
                       fontWeight: FontWeight.bold
-                  ), ),
+                  )),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  child: Text('LB', style:Theme.of(context).textTheme.displaySmall!.copyWith(
-                      color: _isKgSelected ?Colors.white:Colors.black,
+                  child: Text('LB', style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: _isKgSelected ? Colors.white : Colors.black,
                       fontWeight: FontWeight.bold,
-                    fontSize: 30
-                  ),),
+                      fontSize: 30
+                  )),
                 ),
               ],
             ),
@@ -123,9 +136,12 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
               onPressed: () {
                 Get.to(() => const HeightSelectionPage());
               },
-              child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-              ),),
+              child: Text(
+                  "Continue",
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold
+                  )
+              ),
             ),
           ],
         ),
@@ -133,3 +149,4 @@ class _WeightSelectionPageState extends State<WeightSelectionPage> {
     );
   }
 }
+

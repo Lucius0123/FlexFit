@@ -41,7 +41,15 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.0.17
   intl: ^0.20.2
-  fl_chart: ^0.70.2
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.2
+  cloud_firestore: ^5.6.6
+  firebase_storage: ^12.4.5
+  google_sign_in: ^6.3.0
+  cached_network_image: ^3.4.1
+  image_picker: ^1.1.2
+  uuid: ^4.5.1
+  liquid_pull_to_refresh: ^3.0.1
 
 dev_dependencies:
   flutter_test:

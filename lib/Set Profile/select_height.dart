@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:pose_detection_realtime/Set%20Profile/ruler_picker.dart';
-
+import '../A part/controllers/onboarding_controller.dart';
 import 'goal_select.dart';
+
 
 class HeightSelectionPage extends StatelessWidget {
   const HeightSelectionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final OnboardingController controller = Get.find<OnboardingController>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
+          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F), size: 40),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -44,7 +46,7 @@ class HeightSelectionPage extends StatelessWidget {
             Center(
               child: Text(
                 'Start your journey to a healthier lifestyle by setting up your profile.',
-                style:Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -52,20 +54,24 @@ class HeightSelectionPage extends StatelessWidget {
             CustomScalePicker(
               minValue: 145,
               maxValue: 220,
-              initialValue: 157,
+              initialValue: controller.height.value.toInt(),
               isVertical: false,
               unit: "Cm",
               onChanged: (value) {
-                print("Selected Age: $value");
+                controller.setHeight(value.toDouble());
               },
-            ),const Spacer(),
+            ),
+            const Spacer(),
             ElevatedButton(
               onPressed: () {
-                Get.to(() =>  const GoalSelectionPage());
+                Get.to(() => const GoalSelectionPage());
               },
-              child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-              )),
+              child: Text(
+                  "Continue",
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold
+                  )
+              ),
             ),
           ],
         ),
@@ -73,3 +79,4 @@ class HeightSelectionPage extends StatelessWidget {
     );
   }
 }
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../A part/controllers/auth_controller.dart';
 import '../components/textfield.dart';
 
 
@@ -10,7 +11,8 @@ class ForgotPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController name = TextEditingController();
+    final authController = Get.find<AuthController>();
+    final emailController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -57,17 +59,29 @@ class ForgotPasswordPage extends StatelessWidget {
               child: GeneralTextField(
                 feildColor: Colors.black,
                 filledName: 'Enter your email address',
-                controller: name,
+                controller: emailController,
                 hintText: "abc12@gmail.com",
+                type: TextInputType.emailAddress,
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Get.toNamed('/set_password'),
-              child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            Obx(()=>ElevatedButton(
+              onPressed: authController.isLoading.value
+                  ? null
+                  : () {
+                if (emailController.text.isEmpty) {
+                  Get.snackbar('Error', 'Please enter your email');
+                  return;
+                }
+
+                authController.resetPassword(emailController.text.trim());
+              },
+              child: authController.isLoading.value
+                  ?const CircularProgressIndicator(color: Colors.white)
+                  :Text('Send Reset Link', style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   fontWeight: FontWeight.bold
               )),
-            ),
+            )),
           ],
         ),
       ),

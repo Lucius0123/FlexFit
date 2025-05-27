@@ -3,16 +3,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pose_detection_realtime/Set%20Profile/ruler_picker.dart';
 import 'package:pose_detection_realtime/Set%20Profile/select_weight.dart';
+import '../A part/controllers/onboarding_controller.dart';
+
 
 class AgeSelectionPage extends StatelessWidget {
   const AgeSelectionPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final OnboardingController controller = Get.find<OnboardingController>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
+          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F), size: 40),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -37,32 +42,36 @@ class AgeSelectionPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-             SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
             Center(
               child: Text(
                 'Start your journey to a healthier lifestyle by setting up your profile.',
-                style:Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
-             SizedBox(height: 50.h),
+            SizedBox(height: 35.h),
             CustomScalePicker(
-              minValue: 00,
+              minValue: 0,
               maxValue: 90,
-              initialValue: 10,
+              initialValue: controller.age.value,
               isVertical: false,
               unit: "Years",
               onChanged: (value) {
-                print("Selected Age: $value");
+                controller.setAge(value);
               },
-            ),Spacer(),
+            ),
+            Spacer(),
             ElevatedButton(
               onPressed: () {
-                Get.to(() =>  WeightSelectionPage());
+                Get.to(() => const WeightSelectionPage());
               },
-              child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-              )),
+              child: Text(
+                  "Continue",
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold
+                  )
+              ),
             ),
           ],
         ),
@@ -70,3 +79,4 @@ class AgeSelectionPage extends StatelessWidget {
     );
   }
 }
+
