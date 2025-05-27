@@ -1,30 +1,47 @@
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pose_detection_realtime/profile_pages/Edit_profile.dart';
-import 'package:pose_detection_realtime/profile_pages/Setting_Page/setting_page.dart';
-import 'package:pose_detection_realtime/profile_pages/my_profile.dart';
-import 'Search Pages/search_screen.dart';
-import 'Set Profile/age_selection.dart';
-import 'Set Profile/gender_selection.dart';
-import 'Set Profile/goal_select.dart';
-import 'Set Profile/select_height.dart';
-import 'Set Profile/select_weight.dart';
-import 'Set Profile/setUp.dart';
-import 'SignUp Page/forgotPassword.dart';
-import 'SignUp Page/login.dart';
-import 'SignUp Page/setPassword.dart';
-import 'SignUp Page/signUP.dart';
-import 'home_page.dart';
+import 'A part/controllers/app_controller.dart';
+import 'A part/controllers/auth_controller.dart';
+import 'A part/controllers/challenge_controller.dart';
+import 'A part/controllers/daily_challenge_controller.dart';
+import 'A part/controllers/leaderboard_controller.dart';
+import 'A part/controllers/user_controller.dart';
+import 'A part/controllers/workout_controller.dart';
+import 'A part/screens/splash_screen.dart';
+import 'A part/services/firebase_service.dart';
+import 'firebase_options.dart';
 late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
-  runApp(MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await Get.putAsync(() => FirebaseService().init());
+
+  // Initialize controllers
+  Get.put(AuthController());
+  Get.put(AppController());
+  Get.put(UserController());
+  Get.put(WorkoutController());
+  Get.put(ChallengeController());
+  Get.put(LeaderboardController());
+  Get.put(DailyChallengeController()); // Add this line
+
+
+  runApp( MyApp());
 }
 class MyApp extends StatelessWidget {
   @override
@@ -37,15 +54,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: _buildThemeData(),
-          initialRoute: '/login',
-          getPages: [
-            GetPage(name: '/login', page: () =>  LoginPage()),
-            GetPage(name: '/home_page', page: () =>  HomePage()),
-            GetPage(name: '/signup', page: () => const SignUpPage()),
-            GetPage(name: '/setting_page', page: () =>  SettingsPage()),
-            GetPage(name: '/Search_screen', page: () =>  SearchScreen()),
-
-          ],
+          home: SplashScreen(),
         );
       },
     );
@@ -84,6 +93,16 @@ class MyApp extends StatelessWidget {
           fontSize: 16.sp,
           color: Colors.black,
         ),
+        labelMedium: GoogleFonts.poppins(
+          fontSize: 12.sp,
+          color: Colors.black,
+        ),
+        labelSmall: GoogleFonts.poppins(
+          fontSize: 10.sp,
+          color: Colors.black,
+        ),
+
+
 
       ),
       colorScheme: ColorScheme.dark(

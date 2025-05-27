@@ -6,20 +6,22 @@ import 'package:intl/intl.dart';
 import 'notification_model.dart';
 
 class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  @override
   int _selectedTab = 0;
+  @override
   Widget build(BuildContext context) {
     final notifications =
     _selectedTab == 0 ? reminders : systemNotifications;
     final groupedNotifications = groupNotificationsByDate(notifications);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
@@ -106,7 +108,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           },
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 );
               },

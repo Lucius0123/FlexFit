@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import '../A part/controllers/onboarding_controller.dart';
+import 'age_selection.dart';
 
 
 class GenderSelectionPage extends StatefulWidget {
@@ -12,14 +13,16 @@ class GenderSelectionPage extends StatefulWidget {
 }
 
 class _GenderSelectionPageState extends State<GenderSelectionPage> {
+  final OnboardingController controller = Get.find<OnboardingController>();
   String? selectedGender;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
+          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F), size: 40),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -31,7 +34,7 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding:  EdgeInsets.only(bottom: 24.h),
+          padding: EdgeInsets.only(bottom: 24.h),
           child: Column(
             children: [
               Padding(
@@ -44,22 +47,22 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 16.h),
               Container(
                 height: 100.h,
                 padding: EdgeInsets.all(8),
                 color: Theme.of(context).colorScheme.primary,
-                child:Center(
+                child: Center(
                   child: Text(
                     'Start your journey to a healthier lifestyle by setting up your profile.',
-                    style:Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Colors.black
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+               SizedBox(height: 16.h),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -67,7 +70,6 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
                     onTap: () {
                       setState(() {
                         selectedGender = 'male';
-                        print(selectedGender);
                       });
                     },
                     child: Column(
@@ -78,19 +80,23 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
                           width: 120.h,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: selectedGender == 'male' ? Theme.of(context).colorScheme.onPrimary : Colors.white.withOpacity(0.20),
+                            color: selectedGender == 'male'
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Colors.white.withOpacity(0.20),
                             border: Border.all(
-                              color: Colors.white, // Border color
-                              width: 2, // Border width
+                              color: Colors.white,
+                              width: 2,
                             ),
                           ),
                           child: Icon(
                             Icons.male_outlined,
                             size: 100,
-                            color: selectedGender == 'male' ? Theme.of(context).colorScheme.onSurface : Colors.white,
+                            color: selectedGender == 'male'
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Colors.white,
                           ),
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Text(
                           'Male',
                           style: Theme.of(context).textTheme.displaySmall,
@@ -98,12 +104,11 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       setState(() {
                         selectedGender = 'female';
-                        print(selectedGender);
                       });
                     },
                     child: Column(
@@ -114,35 +119,46 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
                           width: 120.h,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: selectedGender == 'female' ? Theme.of(context).colorScheme.onPrimary : Colors.white.withOpacity(0.20),
+                            color: selectedGender == 'female'
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Colors.white.withOpacity(0.20),
                             border: Border.all(
-                              color: Colors.white, // Border color
-                              width: 2, // Border width
+                              color: Colors.white,
+                              width: 2,
                             ),
                           ),
                           child: Icon(
                             Icons.female_outlined,
                             size: 100,
-                            color: selectedGender == 'female' ? Theme.of(context).colorScheme.onSurface : Colors.white,
+                            color: selectedGender == 'female'
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Colors.white,
                           ),
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Text(
                           'Female',
-                          style:Theme.of(context).textTheme.displaySmall,
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 26.h,),
-                    ElevatedButton(
-                      onPressed:selectedGender == 'male' || selectedGender == 'female'? () => Get.toNamed('/age_selection'):null,
-                      child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold
-                      )),
+                  SizedBox(height: 16.h),
+                  ElevatedButton(
+                    onPressed: selectedGender == 'male' || selectedGender == 'female'
+                        ? () {
+                      // Save gender to controller
+                      controller.setGender(selectedGender!);
+                      Get.to(() => const AgeSelectionPage());
+                    }
+                        : null,
+                    child: Text(
+                        "Continue",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.bold
+                        )
                     ),
-
-
+                  ),
                 ],
               ),
             ],
@@ -152,3 +168,4 @@ class _GenderSelectionPageState extends State<GenderSelectionPage> {
     );
   }
 }
+

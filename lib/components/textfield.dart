@@ -26,7 +26,9 @@ class GeneralTextField extends StatelessWidget {
           controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: Theme.of(context).textTheme.labelLarge
+            hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Colors.grey
+            )
           ),
           style:Theme.of(context).textTheme.labelLarge,
         ),
@@ -84,7 +86,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             ),
             hintText: widget.text,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-    color: Colors.black
+                color: Colors.grey
     ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),

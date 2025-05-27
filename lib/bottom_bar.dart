@@ -16,10 +16,14 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(context,'assets/icons/bottom_bar_icons/Home Switch.svg', 0,25),
-          _buildNavItem(context,'assets/icons/bottom_bar_icons/Resources Switch.svg', 1,25),
-          _buildNavItem(context,'assets/icons/bottom_bar_icons/Stars.svg', 2,25),
-          _buildNavItem(context,'assets/icons/bottom_bar_icons/Support & Help Switch.svg', 3,25),
+          _buildNavItem(context,'assets/icons/bottom_bar_icons/Home Switch.svg', 0,23),
+          _buildNavItem(context,'assets/icons/workout.svg', 1,23),
+          _buildNavItem(context,'assets/icons/community.svg', 2,23),
+          GestureDetector(
+            onTap: ()=>onTap(3),
+            child: Icon(Icons.person,size: 25.h,color:currentIndex == 3? Theme.of(context).colorScheme.onPrimary: Colors.white, )
+          )
+          
         ],
       ),
     );

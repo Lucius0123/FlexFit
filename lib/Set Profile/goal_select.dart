@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pose_detection_realtime/Set%20Profile/set_Activity_level.dart';
 
+import '../A part/controllers/onboarding_controller.dart';
+
 class GoalSelectionPage extends StatefulWidget {
   const GoalSelectionPage({Key? key}) : super(key: key);
 
@@ -11,6 +13,7 @@ class GoalSelectionPage extends StatefulWidget {
 }
 
 class _GoalSelectionPageState extends State<GoalSelectionPage> {
+  final OnboardingController controller = Get.find<OnboardingController>();
   int? _selectedIndex;
 
   @override
@@ -27,7 +30,7 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
+          icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F), size: 40),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -38,7 +41,7 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
         ),
       ),
       body: Padding(
-        padding:  EdgeInsets.only(bottom: 24.h),
+        padding: EdgeInsets.only(bottom: 24.h),
         child: Column(
           children: [
             Padding(
@@ -51,25 +54,14 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 12.h),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
-              child: Center(
-                child: Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
-                  style:Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            SizedBox(height: 26.h),
+            SizedBox(height: 16.h),
             Expanded(
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
-                padding: const EdgeInsets.only(left: 24,right: 8),
+                padding: const EdgeInsets.only(left: 24, right: 8),
                 child: Scrollbar(
                   trackVisibility: true,
-                  thickness: 8.0, // Adjust the thickness of the scrollbar
+                  thickness: 8.0,
                   radius: const Radius.circular(10),
                   interactive: true,
                   child: Padding(
@@ -78,8 +70,8 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
                       itemCount: goals.length,
                       itemBuilder: (context, index) {
                         return Container(
-                          margin: EdgeInsets.symmetric(vertical: 22,),
-                         padding:  EdgeInsets.only(left: 24,right: 8),
+                          margin: EdgeInsets.symmetric(vertical: 22),
+                          padding: EdgeInsets.only(left: 24, right: 8),
                           height: 70,
                           width: 200.w,
                           decoration: BoxDecoration(
@@ -89,32 +81,36 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(goals[index],style:Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  color: Colors.black
-                              ) ,),
+                              Text(
+                                goals[index],
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    color: Colors.black
+                                ),
+                              ),
                               Transform.scale(
                                 scale: 2,
                                 child: Radio<int>(
                                   value: index,
-                                  // Color for selected radio button
-                                  fillColor: WidgetStateProperty.resolveWith<Color>(
+                                  fillColor: MaterialStateProperty.resolveWith<Color>(
                                         (states) {
                                       if (_selectedIndex == index) {
-                                        return Theme.of(context).colorScheme.onPrimary; // Color for the selected state
+                                        return Theme.of(context).colorScheme.onPrimary;
                                       } else {
-                                        return Colors.black; // Color for the unselected state
+                                        return Colors.black;
                                       }
                                     },
-                                  ), // Color for unselected radio button
-                                  groupValue: _selectedIndex, // The selected value to control the radio button
+                                  ),
+                                  groupValue: _selectedIndex,
                                   onChanged: (int? value) {
                                     setState(() {
-                                      _selectedIndex = value; // Update selected index when radio button is changed
+                                      _selectedIndex = value;
+                                      if (value != null) {
+                                        controller.setGoal(goals[value]);
+                                      }
                                     });
                                   },
                                 ),
                               ),
-
                             ],
                           ),
                         );
@@ -124,14 +120,19 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
                 ),
               ),
             ),
-            SizedBox(height: 26.h),
+            SizedBox(height: 16.h),
             ElevatedButton(
-              onPressed: _selectedIndex!=null?() {
-                Get.to(() => const PhysicalActivityPage());
-              }:null,
-              child: Text("Continue", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold
-              ),),
+              onPressed: _selectedIndex != null
+                  ? () {
+                Get.to(() =>  ActivityLevelPage());
+              }
+                  : null,
+              child: Text(
+                  "Continue",
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold
+                  )
+              ),
             ),
           ],
         ),
@@ -139,3 +140,4 @@ class _GoalSelectionPageState extends State<GoalSelectionPage> {
     );
   }
 }
+

@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../A part/controllers/auth_controller.dart';
 import '../components/textfield.dart';
+import 'login.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController fullName = TextEditingController();
-    TextEditingController email = TextEditingController();
-    TextEditingController pass = TextEditingController();
-    TextEditingController conpass = TextEditingController();
+    final authController = Get.find<AuthController>();
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
       backgroundColor: Colors.transparent,
-      leading: IconButton(
-        icon: const Icon(Icons.navigate_before, color: Color(0xffBADE4F),size: 40,),
-        onPressed: () {},
-      ),
+      automaticallyImplyLeading: false,
       title: Text(
         "Create Account",
         style: Theme.of(context).textTheme.displayMedium,
@@ -31,14 +32,14 @@ class SignUpPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
             Text(
               "Welcome",
               style: Theme.of(context).textTheme.displayMedium!.copyWith(
                   color: Colors.white
               ),
             ),
-            SizedBox(height: 26.h),
+            SizedBox(height: 16.h),
             Container(
               padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 24.w),
               color: Theme.of(context).colorScheme.primary,
@@ -47,29 +48,31 @@ class SignUpPage extends StatelessWidget {
                 children: [
                   GeneralTextField(
                     feildColor: Colors.black,
-                      hintText: "Abce Abe",
+                      hintText: "Abce",
                       filledName: 'Full Name',
-                      controller: fullName),
+                      controller: nameController),
                   const SizedBox(height: 20,),
                   GeneralTextField(
                       feildColor: Colors.black,
-                      hintText: "+91 63295357",
-                      filledName: 'Email or Phone Number',
-                      controller: email),
+                      hintText: "aabc@gmail.com",
+                      filledName: 'Email',
+                      controller: emailController),
                   const SizedBox(height: 20,),
                   PasswordTextField(
+                      feildColor: Colors.black,
                       text: 'Password',
-                      controller: pass,
+                      controller:passwordController,
                       passFilledName: "Password"),
                   const SizedBox(height: 20,),
                   PasswordTextField(
+                      feildColor: Colors.black,
                       text: 'Confirm Password',
-                      controller: pass,
+                      controller: confirmPasswordController,
                       passFilledName: "Confirm Password")
                 ],
               ),
             ),
-            SizedBox(height: 26.h),
+            SizedBox(height: 16.h),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -101,14 +104,46 @@ class SignUpPage extends StatelessWidget {
                 )
               ],
             ),
-             SizedBox(height: 26.h,),
-            ElevatedButton(
-              onPressed: () => Get.toNamed('/setUp'),
-              child: Text("Sign Up", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold
+             SizedBox(height: 16.h,),
+            Obx(() => ElevatedButton(
+              onPressed: authController.isLoading.value
+                  ? null
+                  : () {
+                // Validate inputs
+                if (nameController.text.isEmpty ||
+                    emailController.text.isEmpty ||
+                    passwordController.text.isEmpty ||
+                    confirmPasswordController.text.isEmpty) {
+                  Get.snackbar('Error', 'Please fill in all fields');
+                  return;
+                }
+
+                if (passwordController.text != confirmPasswordController.text) {
+                  Get.snackbar('Error', 'Passwords do not match');
+                  return;
+                }
+
+                if (passwordController.text.length < 6) {
+                  Get.snackbar('Error', 'Password must be at least 6 characters');
+                  return;
+                }
+
+                authController.signUp(
+                  nameController.text.trim(),
+                  emailController.text.trim(),
+                  passwordController.text,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: authController.isLoading.value
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  :  Text("Sign Up", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold
               )),
-            ),
-            SizedBox(height: 26.h),
+            )),
+            SizedBox(height: 16.h),
             Center(
               child: Text("or sign up with", style: Theme.of(context).textTheme.bodyMedium),
             ),
@@ -127,7 +162,9 @@ class SignUpPage extends StatelessWidget {
                 children: [
                   const Text("Already have an account?"),
                   TextButton(
-                    onPressed: () => Get.toNamed('/login'),
+                    onPressed: () {
+                      Get.to(() =>  LoginPage());
+                    },
                     child: Text(
                       "Log In",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
